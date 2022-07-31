@@ -29,6 +29,53 @@ if (!defined('ABSPATH')) {
  * when hit the url then you get post on brewey custom post  
  */
 
+/**
+ * Template Function Configure 
+ */
+
+// Template stores in Array
+function my_template_array()
+{
+    $temps = [];
+    $temps['front-special-template.php'] = 'Front Special Template';
+
+    return $temps;
+}
+
+// My template register 
+function my_template_register($page_templates, $theme, $post)
+{
+    $templates = my_template_array();
+    foreach ($templates as $key => $value) {
+        $page_templates[$key] = $value;
+    }
+    return $page_templates;
+}
+add_filter('theme_page_templates', 'my_template_register', 10, 3);
+
+
+// Templates path include post wise 
+function wecoder_template_include($template)
+{
+
+    global $post, $wp_query, $wpdb;
+
+    if (isset($post->ID)) {
+
+        $templates = my_template_array();
+
+        $page_temp_slug = get_page_template_slug($post->ID);
+
+        // echo '<pre> Preformated: ' .plugin_dir_path(__FILE__).'page-templates/'.$page_temp_slug . '';
+
+        if (isset($templates[$page_temp_slug])) {
+            $template = plugin_dir_path(__FILE__) . 'page-templates/' . $page_temp_slug;
+        }
+    }
+
+    return $template;
+}
+add_filter('template_include', 'wecoder_template_include');
 
 /**
  * Brewery custom post 
